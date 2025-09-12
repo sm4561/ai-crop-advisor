@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template # <-- Added render_template
 from flask_cors import CORS
 import joblib
 import numpy as np
@@ -17,7 +17,13 @@ except Exception as e:
     model = None
     crop_data_df = None
 
-# --- Step 2: UPDATED Analysis and Tips Function ---
+# --- Step 2: Homepage Route (This is the new part that fixes the error) ---
+@app.route('/')
+def home():
+    """Serves the main HTML page to the user."""
+    return render_template('index.html')
+
+# --- Step 3: UPDATED Analysis and Tips Function ---
 def get_analysis_and_tips(input_data, recommended_crop, df):
     """Compares user input to ideal crop conditions and provides structured analysis."""
     try:
@@ -70,7 +76,7 @@ def get_analysis_and_tips(input_data, recommended_crop, df):
         }
 
 
-# --- Step 3: API Endpoints ---
+# --- Step 4: API Endpoints ---
 @app.route('/predict', methods=['POST'])
 def predict():
     if not model or crop_data_df is None:
@@ -148,10 +154,6 @@ def get_crop_info():
         print(f"❌ Error getting crop info: {e}")
         return jsonify({"error": "Could not retrieve crop info"}), 500
 
-# --- Step 4: Run the Flask App ---
+# --- Step 5: Run the Flask App ---
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
